@@ -1,4 +1,6 @@
 #!/bin/bash
+# Change to the directory where the script is located
+cd "$(dirname "$0")"
 
 # Detect OS
 os=$(uname -s)
@@ -37,12 +39,20 @@ esac
 echo "Using architecture: $arch"
 
 # Construct the filename
-filename="pocketbase versions/pocketbase_0.22.9_${os}_${arch}.zip"
+filename="pocketbase_versions/pocketbase_0.22.9_${os}_${arch}.zip"
 
-# Check if file exists
+# Check if file exists and extract 'pocketbase' from it to directory one level up
 if [ -e "$filename" ]; then
     echo "Found file: $filename"
-    # You can add commands here to do something with the file, e.g., unzip it
+    # Check if unzip command is available
+    if command -v unzip >/dev/null; then
+        # Unzip only the 'pocketbase' file to directory one level up
+        unzip "$filename" pocketbase -d -o  ../
+        echo "Extracted 'pocketbase' from $filename into project root"
+    else
+        echo "Unzip command not found. Cannot extract 'pocketbase' from $filename."
+        exit 1
+    fi
 else
     echo "File does not exist: $filename"
     exit 1
