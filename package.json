@@ -1,0 +1,12 @@
+{
+  "name": "web-pocketbase-chat",
+  "version": "1.0.0",
+  "description": "Simple account pocketbase powered chat.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["simple", "easy", "startr", "pocketbase", "chat", "startr.style"],
+  "author": "",
+  "license": "AGPL"
+}
