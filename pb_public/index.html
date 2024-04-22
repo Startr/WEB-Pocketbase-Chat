@@ -86,11 +86,9 @@
         <div style="--d:flex">
         <label for="newMessage"></label>
         <input x-model="newMessage" id="newMessage" type="newMessage" placeholder="Message" />
-        <button @click="sendMessage">Send</button>
-
-        <hr style="--m: 1rem" />
+        <button @click="sendMessage" style="--m:auto">Send</button>  
         </div>
-        <button @click="selectedFriend = null">Back</button>
+        <button @click="selectedFriend = null" class="blue">Back</button>
       </form>
     </div>
     <script>
@@ -201,6 +199,7 @@
             console.log("Getting friends...");
             const friends = await this.client.collection("users").getFullList({
               sort: "-created",
+              filter: `id != '${this.client.authStore.baseModel.id}'`,
             });
             this.friends = friends;
           },
@@ -246,8 +245,11 @@
           // messages functions
           async sendMessage() {
             try {
-              await this.client.records.create("message", { text: this.newMessage, friend: this.selectedFriend.id });
+              console.log("Sending message...");
+              console.log(this.client.authStore.baseModel.username);
+              await this.client.collection("messages").create({ text: this.newMessage, recipientID: this.selectedFriend.id, senderID: this.client.authStore.baseModel.id });
               this.newMessage = "";
+              this.selectFriend(this.selectedFriend);
             } catch (err) {
               console.log("ERR", err);
             }
@@ -256,14 +258,6 @@
           async deleteMessage(message) {
             try {
               await this.client.records.delete("message", message.id);
-            } catch (err) {
-              console.log("ERR", err);
-            }
-          },
-
-          async toggleDone(message, toggle) {
-            try {
-              await this.client.records.update("message", message.id, { done: toggle });
             } catch (err) {
               console.log("ERR", err);
             }
