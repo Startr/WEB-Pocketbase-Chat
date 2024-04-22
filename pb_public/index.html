@@ -27,7 +27,7 @@
       </nav>
 
       <!-- login / signup -->
-      <article x-show="showLogin" x-transition>
+      <form onsubmit="return false;" x-show="showLogin" x-transition>
         <h2>Login</h2>
         <label for="email">Email</label>
         <input x-model="email" type="email" id="email" placeholder="Email address" />
@@ -38,7 +38,8 @@
         <button @click="login()">Login</button>
         <mark x-show="loginMessage" x-text="loginMessage"></mark>
         <hr style="--m: 4rem" />
-
+      </form>
+      <form onsubmit="return false;" x-show="showLogin" x-transition>
         <h2>Signup</h2>
         <label for="email">Email</label>
         <input x-model="email" type="email" id="email" placeholder="Email address" autocomplete="email" />
@@ -51,10 +52,10 @@
 
         <button @click="signup()">Signup</button>
         <mark x-show="signupMessage" x-text="signupMessage"></mark>
-      </article>
+      </form>
 
       <!-- show friends -->
-      <article x-show="!showLogin && !selectedFriend" x-transition style="--mt: 10%">
+      <form onsubmit="return false;" x-show="!showLogin && !selectedFriend" x-transition style="--mt: 10%">
         <h2>Your Friends</h2>
 
         <template x-for="friend in friends">
@@ -69,10 +70,10 @@
         <label for="newFriend">Find New Friend</label>
         <input x-model="newFriendName" id="newFriend" type="newFriend" placeholder="Friend Name" />
         <button @click="findFriend">Find</button>
-      </article>
+      </form>
 
       <!-- show selectedFriend messages -->
-      <article x-show="!showLogin && selectedFriend" x-transition style="--mt: 10%">
+      <form onsubmit="return false;" x-show="!showLogin && selectedFriend" x-transition style="--mt: 10%">
         <h2>Test</h2>
 
         <template x-for="message in messages">
@@ -99,7 +100,7 @@
         <hr style="--m: 1rem" />
 
         <button @click="selectedFriend = null">Back</button>
-      </article>
+      </form>
     </div>
     <script>
       var test_var = "test";
@@ -161,7 +162,6 @@
             try {
               const user = await this.client.collection("users").authWithPassword(this.email, this.password);
               this.getFriends();
-              console.log("Friends", this.friends);
               //this.subscribeToFriends();
               this.showLogin = false;
               this.email = "";
