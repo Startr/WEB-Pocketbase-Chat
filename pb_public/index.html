@@ -15,7 +15,7 @@
 
     <link rel="stylesheet" href="https://startr.style/style.css" />
   </head>
-  <body>
+  <body style="--d: flex; --fd: column">
     <div x-data="friends">
       <nav>
         <ul style="--lis: none; --p: 0">
@@ -68,34 +68,29 @@
         <hr style="--m: 2rem" />
 
         <label for="newFriend">Find New Friend</label>
-        <input x-model="newFriendName" id="newFriend" type="newFriend" placeholder="Friend Name" />
-        <button @click="findFriend">Find</button>
+        <input @keyup="findFriend" x-model="newFriendName" id="newFriend" type="newFriend" placeholder="Friend Name" />
       </form>
 
       <!-- show selectedFriend messages -->
       <form onsubmit="return false;" x-show="!showLogin && selectedFriend" x-transition style="--mt: 10%">
-        <h2>Test</h2>
+        <template x-if="selectedFriend">
+          <h2>Messages with <i x-text="selectedFriend.username"></i></h2>
+        </template>
 
         <template x-for="message in messages">
-          <div style="--d: flex; --jc: space-between; --mt: 1rem">
-            <label for="check">
-              <input
-                x-model="message.done"
-                @change="e => toggleDone(message, e.target.checked)"
-                type="checkbox"
-                id="check"
-              />
-              <strong x-text="message.text"></strong>
-            </label>
-            <i @click="deleteMessage(message)" style="--ta: end; --cur: pointer"></i>
+          <div style="--d:flex; ">
+            <i i-if="message.expand" style="--d: flex; --w: 80px; --h: 80px; --br: 50%; --bg: rgb(0, 157, 255); --m: 0 1rem 0 0; --size:10px; --ai: center; --jc:center"  x-text="message.expand.senderID.username">
+              </i
+            >:
+            <strong x-text="message.text"></strong>
           </div>
         </template>
 
         <hr style="--m: 2rem" />
 
-        <label for="newMessage">Create New Message</label>
+        <label for="newMessage"></label>
         <input x-model="newMessage" id="newMessage" type="newMessage" placeholder="What do you want to Startr Chat?" />
-        <button @click="createMessage">Create</button>
+        <button @click="sendMessage">Send</button>
 
         <hr style="--m: 1rem" />
 
@@ -219,9 +214,9 @@
               console.log("Finding friend...");
               console.log(this.newFriendName);
               const filter = `username~${this.newFriendName}`;
-              
-              console.log("Trying with filter: username~" + this.newFriendName)
-              const friends = await this.client.collection('users').getList(1, 50, {
+
+              console.log("Trying with filter: username~" + this.newFriendName);
+              const friends = await this.client.collection("users").getList(1, 50, {
                 filter: `username~'${this.newFriendName}'`,
               });
               this.friends = friends.items;
@@ -240,26 +235,20 @@
 
           async selectFriend(friend) {
             try {
-              this.messages = await this.client.collection('messages').getList(1, 50,{
+              messages = await this.client.collection("messages").getList(1, 50, {
                 filter: `recipientID = '${friend.id}'`,
+                expand: "senderID, recipientID",
               });
               this.selectedFriend = friend;
-
-              // suscribe to live update events
-              this.client.realtime.subscribe("message", (e) => {
-                if (e.record.friend !== friend.id) return;
-                if (e.action === "create") this.messages.push(e.record);
-                if (e.action === "update")
-                  this.messages = this.messages.map((i) => (i.id === e.record.id ? e.record : i));
-                else if (e.action === "delete") this.messages = this.messages.filter((i) => i.id !== e.record.id);
-              });
+              this.messages = messages.items;
+              console.log("Messages", this.messages);
             } catch (err) {
               console.log("ERR", err);
             }
           },
 
           // messages functions
-          async createMessage() {
+          async sendMessage() {
             try {
               await this.client.records.create("message", { text: this.newMessage, friend: this.selectedFriend.id });
               this.newMessage = "";
