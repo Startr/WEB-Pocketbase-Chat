@@ -18,40 +18,38 @@
   <body>
     <div x-data="friends">
       <nav>
-        <ul style="--lis: none">
+        <ul style="--lis: none; --p: 0">
           <li>
             <h1 @click="selectedFriend = null" style="--m: 0; --ta: center; --cur: pointer">Startr Chat</h1>
           </li>
-        </ul>
-        <ul style="--lis: none">
-          <li><i x-show="!showLogin" @click="logout()" style="--cur: pointer"></i></li>
+          <li x-show="!showLogin" @click="logout()" style="--cur: pointer; --ta: right">Logout</li>
         </ul>
       </nav>
 
       <!-- login / signup -->
       <article x-show="showLogin" x-transition>
         <h2>Login</h2>
-          <label for="email">Email</label>
-          <input x-model="email" type="email" id="email" placeholder="Email address" />
+        <label for="email">Email</label>
+        <input x-model="email" type="email" id="email" placeholder="Email address" />
 
-          <label for="password">Password</label>
-          <input x-model="password" type="password" id="password" autocomplete=""current-password"" />
+        <label for="password">Password</label>
+        <input x-model="password" type="password" id="password" autocomplete=""current-password"" />
 
-          <button @click="login()">Login</button>
+        <button @click="login()">Login</button>
         <mark x-show="loginMessage" x-text="loginMessage"></mark>
         <hr style="--m: 4rem" />
 
         <h2>Signup</h2>
-          <label for="email">Email</label>
-          <input x-model="email" type="email" id="email" placeholder="Email address" autocomplete="email" />
+        <label for="email">Email</label>
+        <input x-model="email" type="email" id="email" placeholder="Email address" autocomplete="email" />
 
-          <label for="password">Password</label>
-          <input x-model="password" type="password" id="password" autocomplete="new-password" />
+        <label for="password">Password</label>
+        <input x-model="password" type="password" id="password" autocomplete="new-password" />
 
-          <label for="passwordConfirm">Confirm Password</label>
-          <input x-model="passwordConfirm" type="password" id="passwordConfirm" autocomplete="new-password" />
+        <label for="passwordConfirm">Confirm Password</label>
+        <input x-model="passwordConfirm" type="password" id="passwordConfirm" autocomplete="new-password" />
 
-          <button @click="signup()">Signup</button>
+        <button @click="signup()">Signup</button>
         <mark x-show="signupMessage" x-text="signupMessage"></mark>
       </article>
 
@@ -61,16 +59,16 @@
 
         <template x-for="friend in friends">
           <div style="--d: flex; --jc: space-between; --mt: 1rem">
-            <u><strong x-text="friend.name" @click="selectFriend(friend)" style="--cur: pointer"></strong></u>
+            <u><strong x-text="friend.username" @click="selectFriend(friend)" style="--cur: pointer"></strong></u>
             <i @click="deleteFriend(friend)" style="--ta: end; --cur: pointer"></i>
           </div>
         </template>
 
         <hr style="--m: 2rem" />
 
-        <label for="newFriend">Create New Friend</label>
+        <label for="newFriend">Find New Friend</label>
         <input x-model="newFriendName" id="newFriend" type="newFriend" placeholder="Friend Name" />
-        <button @click="createFriend">Create</button>
+        <button @click="findFriend">Find</button>
       </article>
 
       <!-- show selectedFriend messages -->
@@ -104,6 +102,8 @@
       </article>
     </div>
     <script>
+      var test_var = "test";
+
       document.addEventListener("alpine:init", () => {
         Alpine.data("friends", () => ({
           // pocketbase client
@@ -128,10 +128,10 @@
 
           async init() {
             // initialize pocketbase
-            this.client = new PocketBase("http://127.0.0.1:8090");
+            this.client = new PocketBase("http://192.168.87.125:8090");
 
             // capture invalid token
-            this.client.afterSend = (response, data) =>  {
+            this.client.afterSend = (response, data) => {
               if (response.status === 401) {
                 this.showLogin = true;
               }
@@ -149,11 +149,11 @@
             const auth = JSON.parse(window.localStorage.getItem("pocketbase_auth"));
             this.client.authStore.save(auth.token, auth.model);
 
-            // fetch todo friends
+            // fetch friends
             this.getFriends();
 
             // suscribe to live update events
-            this.subscribeToFriends();
+            //this.subscribeToFriends();
           },
 
           // login
@@ -161,7 +161,8 @@
             try {
               const user = await this.client.collection("users").authWithPassword(this.email, this.password);
               this.getFriends();
-              this.subscribeToFriends();
+              console.log("Friends", this.friends);
+              //this.subscribeToFriends();
               this.showLogin = false;
               this.email = "";
               this.password = "";
@@ -173,11 +174,17 @@
           // signup
           async signup() {
             try {
-              const user = await this.client.collection('users').create.create({
+              const user = await this.client.collection("users").create({
+                username: this.email
+                  .split("@")[0] // Remove the domain
+                  .replace(/\./g, "_") // Replace all dots with underscores
+                  .split("_") // Split by underscores
+                  .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()) // Capitalize each part
+                  .join("_"),
                 email: this.email,
                 password: this.password,
                 passwordConfirm: this.passwordConfirm,
-              })
+              });
               this.email = "";
               this.password = "";
               this.passwordConfirm = "";
@@ -198,22 +205,16 @@
             this.showLogin = true;
           },
 
-          // friends functions
-          async subscribeToFriends() {
-            this.client.realtime.subscribe("friend", (e) => {
-              if (e.action === "create") this.friends.push(e.record);
-              else if (e.action === "delete") {
-                this.friends = this.friends.filter((l) => l.id !== e.record.id);
-              }
-            });
-          },
-
+          // get friends
           async getFriends() {
-            const { messages } = await this.client.records.getFriend("friend");
-            this.friends = messages;
+            console.log("Getting friends...");
+            const friends = await this.client.collection("users").getFullList({
+              sort: "-created",
+            });
+            this.friends = friends;
           },
 
-          async createFriend() {
+          async findFriend() {
             try {
               const record = await this.client.records.create("friend", {
                 name: this.newFriendName,
