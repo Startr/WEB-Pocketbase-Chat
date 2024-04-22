@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Chat.Startr.Space an example app to get you started with Pocketbase and chat" />
+    <meta name="author" content="Startr.Space" />
+    <meta name="keywords" content="Startr.Space, Chat, Pocketbase, Example, App, Startr.Style, Startr, Space" />
+    <meta name="robots" content="index, follow" />
+
+    <title>Startr Chat</title>
+
+    <script src="js/pocketbase.umd.js"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <link rel="stylesheet" href="https://startr.style/style.css" />
+  </head>
+  <body>
+    <div x-data="friends">
+      <nav>
+        <ul style="--lis: none">
+          <li>
+            <h1 @click="selectedFriend = null" style="--m: 0; --ta: center; --cur: pointer">Startr Chat</h1>
+          </li>
+        </ul>
+        <ul style="--lis: none">
+          <li><i x-show="!showLogin" @click="logout()" style="--cur: pointer"></i></li>
+        </ul>
+      </nav>
+
+      <!-- login / signup -->
+      <article x-show="showLogin" x-transition>
+        <h2>Login</h2>
+          <label for="email">Email</label>
+          <input x-model="email" type="email" id="email" placeholder="Email address" />
+
+          <label for="password">Password</label>
+          <input x-model="password" type="password" id="password" autocomplete=""current-password"" />
+
+          <button @click="login()">Login</button>
+        <mark x-show="loginMessage" x-text="loginMessage"></mark>
+        <hr style="--m: 4rem" />
+
+        <h2>Signup</h2>
+          <label for="email">Email</label>
+          <input x-model="email" type="email" id="email" placeholder="Email address" autocomplete="email" />
+
+          <label for="password">Password</label>
+          <input x-model="password" type="password" id="password" autocomplete="new-password" />
+
+          <label for="passwordConfirm">Confirm Password</label>
+          <input x-model="passwordConfirm" type="password" id="passwordConfirm" autocomplete="new-password" />
+
+          <button @click="signup()">Signup</button>
+        <mark x-show="signupMessage" x-text="signupMessage"></mark>
+      </article>
+
+      <!-- show friends -->
+      <article x-show="!showLogin && !selectedFriend" x-transition style="--mt: 10%">
+        <h2>Your Friends</h2>
+
+        <template x-for="friend in friends">
+          <div style="--d: flex; --jc: space-between; --mt: 1rem">
+            <u><strong x-text="friend.name" @click="selectFriend(friend)" style="--cur: pointer"></strong></u>
+            <i @click="deleteFriend(friend)" style="--ta: end; --cur: pointer"></i>
+          </div>
+        </template>
+
+        <hr style="--m: 2rem" />
+
+        <label for="newFriend">Create New Friend</label>
+        <input x-model="newFriendName" id="newFriend" type="newFriend" placeholder="Friend Name" />
+        <button @click="createFriend">Create</button>
+      </article>
+
+      <!-- show selectedFriend messages -->
+      <article x-show="!showLogin && selectedFriend" x-transition style="--mt: 10%">
+        <h2>Test</h2>
+
+        <template x-for="message in messages">
+          <div style="--d: flex; --jc: space-between; --mt: 1rem">
+            <label for="check">
+              <input
+                x-model="message.done"
+                @change="e => toggleDone(message, e.target.checked)"
+                type="checkbox"
+                id="check"
+              />
+              <strong x-text="message.text"></strong>
+            </label>
+            <i @click="deleteMessage(message)" style="--ta: end; --cur: pointer"></i>
+          </div>
+        </template>
+
+        <hr style="--m: 2rem" />
+
+        <label for="newMessage">Create New Message</label>
+        <input x-model="newMessage" id="newMessage" type="newMessage" placeholder="What do you want to Startr Chat?" />
+        <button @click="createMessage">Create</button>
+
+        <hr style="--m: 1rem" />
+
+        <button @click="selectedFriend = null">Back</button>
+      </article>
+    </div>
+    <script>
+      document.addEventListener("alpine:init", () => {
+        Alpine.data("friends", () => ({
+          // pocketbase client
+          client: null,
+
+          // login / signup
+          showLogin: false,
+          email: null,
+          password: null,
+          passwordConfirm: null,
+          loginMessage: null,
+          signupMessage: null,
+
+          // friends data
+          friends: [],
+          newFriendName: "",
+          selectedFriend: null,
+
+          // messages data
+          messages: null,
+          newMessage: null,
+
+          async init() {
+            // initialize pocketbase
+            this.client = new PocketBase("http://127.0.0.1:8090");
+
+            // capture invalid token
+            this.client.afterSend = (response, data) =>  {
+              if (response.status === 401) {
+                this.showLogin = true;
+              }
+
+              return data;
+            };
+
+            // if user is not logged in, show login / signup page
+            if (!window.localStorage.getItem("pocketbase_auth")) {
+              this.showLogin = true;
+              return;
+            }
+
+            // resume session
+            const auth = JSON.parse(window.localStorage.getItem("pocketbase_auth"));
+            this.client.authStore.save(auth.token, auth.model);
+
+            // fetch todo friends
+            this.getFriends();
+
+            // suscribe to live update events
+            this.subscribeToFriends();
+          },
+
+          // login
+          async login() {
+            try {
+              const user = await this.client.collection("users").authWithPassword(this.email, this.password);
+              this.getFriends();
+              this.subscribeToFriends();
+              this.showLogin = false;
+              this.email = "";
+              this.password = "";
+            } catch (err) {
+              this.loginMessage = err.data.message;
+            }
+          },
+
+          // signup
+          async signup() {
+            try {
+              const user = await this.client.collection('users').create.create({
+                email: this.email,
+                password: this.password,
+                passwordConfirm: this.passwordConfirm,
+              })
+              this.email = "";
+              this.password = "";
+              this.passwordConfirm = "";
+              this.signupMessage = "Success! Please, login.";
+            } catch (err) {
+              console.log(err);
+              this.signupMessage = err.data.message;
+              if (err.data.data.email) this.signupMessage += ` Email: ${err.data.data.email.message}`;
+              if (err.data.data.password) this.signupMessage += ` Password: ${err.data.data.password.message}`;
+              if (err.data.data.passwordConfirm)
+                this.signupMessage += ` Password Confirm: ${err.data.data.passwordConfirm.message}`;
+            }
+          },
+
+          // logout
+          async logout() {
+            this.client.authStore.clear();
+            this.showLogin = true;
+          },
+
+          // friends functions
+          async subscribeToFriends() {
+            this.client.realtime.subscribe("friend", (e) => {
+              if (e.action === "create") this.friends.push(e.record);
+              else if (e.action === "delete") {
+                this.friends = this.friends.filter((l) => l.id !== e.record.id);
+              }
+            });
+          },
+
+          async getFriends() {
+            const { messages } = await this.client.records.getFriend("friend");
+            this.friends = messages;
+          },
+
+          async createFriend() {
+            try {
+              const record = await this.client.records.create("friend", {
+                name: this.newFriendName,
+                userID: this.client.authStore.baseModel.id,
+              });
+              this.newFriendName = "";
+            } catch (err) {
+              console.log("ERR", err);
+            }
+          },
+
+          async deleteFriend(friend) {
+            try {
+              await this.client.records.delete("friend", friend.id);
+            } catch (err) {
+              console.log("ERR", err);
+            }
+          },
+
+          async selectFriend(friend) {
+            try {
+              this.messages = await this.client.records.getFullFriend("message", null, {
+                filter: `friend = '${friend.id}'`,
+              });
+              this.selectedFriend = friend;
+
+              // suscribe to live update events
+              this.client.realtime.subscribe("message", (e) => {
+                if (e.record.friend !== friend.id) return;
+                if (e.action === "create") this.messages.push(e.record);
+                if (e.action === "update")
+                  this.messages = this.messages.map((i) => (i.id === e.record.id ? e.record : i));
+                else if (e.action === "delete") this.messages = this.messages.filter((i) => i.id !== e.record.id);
+              });
+            } catch (err) {
+              console.log("ERR", err);
+            }
+          },
+
+          // messages functions
+          async createMessage() {
+            try {
+              await this.client.records.create("message", { text: this.newMessage, friend: this.selectedFriend.id });
+              this.newMessage = "";
+            } catch (err) {
+              console.log("ERR", err);
+            }
+          },
+
+          async deleteMessage(message) {
+            try {
+              await this.client.records.delete("message", message.id);
+            } catch (err) {
+              console.log("ERR", err);
+            }
+          },
+
+          async toggleDone(message, toggle) {
+            try {
+              await this.client.records.update("message", message.id, { done: toggle });
+            } catch (err) {
+              console.log("ERR", err);
+            }
+          },
+        }));
+      });
+    </script>
+  </body>
+</html>
