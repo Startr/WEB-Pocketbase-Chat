@@ -2,6 +2,9 @@
 pocketbase
 
 bp_data/logs.*
+pb_data/logs.db
+pb_data/logs.db-shm
+pb_data/logs.db-wal
 
 # Apple files
 .DS_Store
