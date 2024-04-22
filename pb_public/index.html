@@ -65,10 +65,7 @@
           </div>
         </template>
 
-        <hr style="--m: 2rem" />
-
-        <label for="newFriend">Find New Friend</label>
-        <input @keyup="findFriend" x-model="newFriendName" id="newFriend" type="newFriend" placeholder="Friend Name" />
+        <input style="--mt:0.6rem" @keyup="findFriend" x-model="newFriendName" id="newFriend" type="newFriend" placeholder="Search for friends" />
       </form>
 
       <!-- show selectedFriend messages -->
@@ -78,22 +75,21 @@
         </template>
 
         <template x-for="message in messages">
-          <div style="--d:flex; ">
-            <i i-if="message.expand" style="--d: flex; --w: 80px; --h: 80px; --br: 50%; --bg: rgb(0, 157, 255); --m: 0 1rem 0 0; --size:10px; --ai: center; --jc:center"  x-text="message.expand.senderID.username">
+          <div style="--d:flex; --ai: center">
+            <i style="--d: flex; --w: 40px; --h: 40px; --br: 50%; --bg: rgb(0, 157, 255); --m: 0.3rem; --size:10px; --ai: center; --jc:center"  x-text="message.expand.senderID.username">
               </i
-            >:
+            >
             <strong x-text="message.text"></strong>
           </div>
         </template>
 
-        <hr style="--m: 2rem" />
-
+        <div style="--d:flex">
         <label for="newMessage"></label>
-        <input x-model="newMessage" id="newMessage" type="newMessage" placeholder="What do you want to Startr Chat?" />
+        <input x-model="newMessage" id="newMessage" type="newMessage" placeholder="Message" />
         <button @click="sendMessage">Send</button>
 
         <hr style="--m: 1rem" />
-
+        </div>
         <button @click="selectedFriend = null">Back</button>
       </form>
     </div>
@@ -236,7 +232,7 @@
           async selectFriend(friend) {
             try {
               messages = await this.client.collection("messages").getList(1, 50, {
-                filter: `recipientID = '${friend.id}'`,
+                filter: `recipientID = '${friend.id}' || senderID = '${friend.id}'`,
                 expand: "senderID, recipientID",
               });
               this.selectedFriend = friend;
@@ -274,6 +270,22 @@
           },
         }));
       });
+
+      function firstLetterToColor(str) {
+        if (!str) return '#000000'; // Return black if the string is empty or undefined
+    
+        const lowerCaseStr = str.toLowerCase(); // Convert string to lowercase to handle case insensitivity
+        const firstChar = lowerCaseStr.charCodeAt(0); // Get char code of the first character
+        if (firstChar < 97 || firstChar > 122) return '#000000'; // Return black if it's not a letter
+    
+        const hue = ((firstChar - 97) / 26) * 360; // Scale the character position to 360 degrees
+        return `hsl(${hue}, 100%, 50%)`; // Return the HSL color string
+    }
     </script>
+    <style>
+      input::placeholder{
+        color:hsl(207.37, 85.07%, 78.86%) !important 
+      }
+    </style>
   </body>
 </html>
