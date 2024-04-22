@@ -216,11 +216,13 @@
 
           async findFriend() {
             try {
-              const record = await this.client.records.create("friend", {
-                name: this.newFriendName,
-                userID: this.client.authStore.baseModel.id,
+              console.log("Finding friend...");
+              console.log(this.newFriendName);
+              console.log("Trying with filter: username~" + this.newFriendName)
+              const friends = await this.client.collection('users').getList(1, 50, {
+                filter: '"username~" + this.newFriendName',
               });
-              this.newFriendName = "";
+              this.friends = friends;
             } catch (err) {
               console.log("ERR", err);
             }
