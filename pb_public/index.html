@@ -61,7 +61,7 @@
         <template x-for="friend in friends">
           <div style="--d: flex; --jc: space-between; --mt: 1rem">
             <u><strong x-text="friend.username" @click="selectFriend(friend)" style="--cur: pointer"></strong></u>
-            <i @click="deleteFriend(friend)" style="--ta: end; --cur: pointer"></i>
+            <a @click="deleteFriend(friend)" style="--ta: end; --cur: pointer">☒</a>
           </div>
         </template>
 
@@ -218,11 +218,13 @@
             try {
               console.log("Finding friend...");
               console.log(this.newFriendName);
+              const filter = `username~${this.newFriendName}`;
+              
               console.log("Trying with filter: username~" + this.newFriendName)
               const friends = await this.client.collection('users').getList(1, 50, {
-                filter: '"username~" + this.newFriendName',
+                filter: `username~'${this.newFriendName}'`,
               });
-              this.friends = friends;
+              this.friends = friends.items;
             } catch (err) {
               console.log("ERR", err);
             }
