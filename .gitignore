@@ -1,6 +1,8 @@
 # Pocketbase
 pocketbase
 
+bp_data/logs.*
+
 # Apple files
 .DS_Store
 
