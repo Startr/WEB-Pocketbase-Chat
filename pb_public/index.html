@@ -240,8 +240,8 @@
 
           async selectFriend(friend) {
             try {
-              this.messages = await this.client.records.getFullFriend("message", null, {
-                filter: `friend = '${friend.id}'`,
+              this.messages = await this.client.collection('messages').getList(1, 50,{
+                filter: `recipientID = '${friend.id}'`,
               });
               this.selectedFriend = friend;
 
