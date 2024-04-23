@@ -15,14 +15,19 @@
 
     <link rel="stylesheet" href="https://startr.style/style.css" />
   </head>
-  <body style="--d: flex; --fd: column">
-    <div x-data="friends">
-      <nav>
-        <ul style="--lis: none; --p: 0">
-          <li>
-            <h1 @click="selectedFriend = null" style="--m: 0; --ta: center; --cur: pointer">Startr Chat</h1>
+  <body>
+    <div style="--d: flex; --fd: column; --h: calc(100vh - 1rem); --typo-size-6: 14px" x-data="friends">
+      <nav style="--size: 14px">
+        <ul style="--d: flex; --jc: space-between; --ai: center; --lis: none; --m: auto; --p: 0">
+          <li style="--w: 33%">
+            <button @click="selectedFriend = null" x-show="selectedFriend" class="blue">Back</button>
           </li>
-          <li x-show="!showLogin" @click="logout()" style="--cur: pointer; --ta: right">Logout</li>
+          <li style="--w: 33%">
+            <h1 style="--m: 0; --ta: center"><span style="--d: none; --d-sm: inline">Startr</span> Chat</h1>
+          </li>
+          <li style="--w: 33%; --ta: right">
+            <button x-show="!showLogin" @click="logout()" style="--m: auto">Exit</button>
+          </li>
         </ul>
       </nav>
 
@@ -55,41 +60,62 @@
       </form>
 
       <!-- show friends -->
-      <form onsubmit="return false;" x-show="!showLogin && !selectedFriend" x-transition style="--mt: 10%">
-        <h2>Your Friends</h2>
+      <article x-show="!showLogin && !selectedFriend" x-transition>
+        <form onsubmit="return false;" style="--h: 90vh; --d: flex; flex-direction: column; --jc: end">
+          <h2 style="--ta: center; --fg: 1">With your Friends</h2>
 
-        <template x-for="friend in friends">
-          <div style="--d: flex; --jc: space-between; --mt: 1rem">
-            <u><strong x-text="friend.username" @click="selectFriend(friend)" style="--cur: pointer"></strong></u>
-            <a @click="deleteFriend(friend)" style="--ta: end; --cur: pointer">☒</a>
-          </div>
-        </template>
+          <template x-for="friend in friends">
+            <div style="--d: flex; --jc: space-between; --mt: 1rem">
+              <u><strong x-text="friend.username" @click="selectFriend(friend)" style="--cur: pointer"></strong></u>
+              <a @click="deleteFriend(friend)" style="--ta: end; --cur: pointer">☒</a>
+            </div>
+          </template>
 
-        <input style="--mt:0.6rem" @keyup="findFriend" x-model="newFriendName" id="newFriend" type="newFriend" placeholder="Search for friends" />
-      </form>
+          <input
+            style="--mt: 0.6rem"
+            @keyup="findFriend"
+            x-model="newFriendName"
+            id="newFriend"
+            type="newFriend"
+            placeholder="Search for friends"
+          />
+        </form>
+      </article>
 
       <!-- show selectedFriend messages -->
-      <form onsubmit="return false;" x-show="!showLogin && selectedFriend" x-transition style="--mt: 10%">
-        <template x-if="selectedFriend">
-          <h2>Messages with <i x-text="selectedFriend.username"></i></h2>
-        </template>
+      <article x-show="!showLogin && selectedFriend" x-transition>
+        <form onsubmit="return false;" style="--h: 99vh; --d: flex; flex-direction: column; --jc: end">
+          <template x-if="selectedFriend">
+            <h2 style="--ta: center">
+              <span style="--d: none; --d-sm: inline">Messages</span> with <i x-text="selectedFriend.username"></i>
+            </h2>
+          </template>
 
-        <template x-for="message in messages">
-          <div style="--d:flex; --ai: center">
-            <i style="--d: flex; --w: 40px; --h: 40px; --br: 50%; --bg: rgb(0, 157, 255); --m: 0.3rem; --size:10px; --ai: center; --jc:center"  x-text="message.expand.senderID.username">
-              </i
-            >
-            <strong x-text="message.text"></strong>
+          <template x-for="message in messages">
+            <div style="--d: flex; --ai: center">
+              <i
+                x-text="message.expand.senderID.username.charAt(0)"
+                :style="
+                 `--bgc: ${firstLetterToColor(message.expand.senderID.username)}; 
+                  --br: 50%;                  
+                  --w: 40px;
+                  --h: 40px;
+                  --ta:center;
+                  --m:0.2em;
+                  `">
+              </i>
+              <strong x-text="message.text"></strong>
+            </div>
+          </template>
+
+          <div style="--d: flex">
+            <label for="newMessage"></label>
+            <input x-model="newMessage" id="newMessage" type="newMessage" placeholder="Message" />
+            <button @click="sendMessage" style="--m: auto">Send</button>
           </div>
-        </template>
-
-        <div style="--d:flex">
-        <label for="newMessage"></label>
-        <input x-model="newMessage" id="newMessage" type="newMessage" placeholder="Message" />
-        <button @click="sendMessage" style="--m:auto">Send</button>  
-        </div>
-        <button @click="selectedFriend = null" class="blue">Back</button>
-      </form>
+          <button @click="selectedFriend = null" class="blue">Back</button>
+        </form>
+      </article>
     </div>
     <script>
       var test_var = "test";
@@ -240,6 +266,10 @@
             } catch (err) {
               console.log("ERR", err);
             }
+            this.client.collection("messages").subscribe("*", function (e) {
+              console.log(e.action);
+              console.log(e.record);
+            });
           },
 
           // messages functions
@@ -247,7 +277,11 @@
             try {
               console.log("Sending message...");
               console.log(this.client.authStore.baseModel.username);
-              await this.client.collection("messages").create({ text: this.newMessage, recipientID: this.selectedFriend.id, senderID: this.client.authStore.baseModel.id });
+              await this.client.collection("messages").create({
+                text: this.newMessage,
+                recipientID: this.selectedFriend.id,
+                senderID: this.client.authStore.baseModel.id,
+              });
               this.newMessage = "";
               this.selectFriend(this.selectedFriend);
             } catch (err) {
@@ -266,20 +300,15 @@
       });
 
       function firstLetterToColor(str) {
-        if (!str) return '#000000'; // Return black if the string is empty or undefined
-    
+        if (!str) return "#000000"; // Return black if the string is empty or undefined
+
         const lowerCaseStr = str.toLowerCase(); // Convert string to lowercase to handle case insensitivity
         const firstChar = lowerCaseStr.charCodeAt(0); // Get char code of the first character
-        if (firstChar < 97 || firstChar > 122) return '#000000'; // Return black if it's not a letter
-    
+        if (firstChar < 97 || firstChar > 122) return "#000000"; // Return black if it's not a letter
+
         const hue = ((firstChar - 97) / 26) * 360; // Scale the character position to 360 degrees
-        return `hsl(${hue}, 100%, 50%)`; // Return the HSL color string
-    }
-    </script>
-    <style>
-      input::placeholder{
-        color:hsl(207.37, 85.07%, 78.86%) !important 
+        return `hsl(${hue}, 80%, 70%)`; // Return the HSL color string
       }
-    </style>
+    </script>
   </body>
 </html>
