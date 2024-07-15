@@ -1,6 +1,6 @@
 # Startr Pocketbase-Chat
 
-## Introducing [[Projects/Curriculum/Startr.Team/Startr.Team|Startr.Team]] [[Pocketbase Chat]]
+## Introducing [[Projects/Curriculum/Startr.Team/Startr.Team|Startr.Team]] [[Pocketbase Chat)
 
 Ever dreamed of launching a website or app in record time? Eager to transform a concept into a functional project that you, your friends, and family can start using within days? If so, you're in the right place. Let me walk you through how you can achieve just that, with a story and a guide to streamline the process.
 
@@ -16,7 +16,7 @@ In this guide, we’ll dive into how to effectively use these low-code platforms
 
 **Getting everything ready for a new project can sometimes feel like piecing together a complex puzzle. That’s why I rely on my Startr.sh quick setup and Startr.Style to simplify the process from the get-go.
 
-[[Want to learn more? Schedule your next free startr lesson now.]]
+[[Want to learn more? Schedule your next free startr lesson now.)
 
 Before diving into other things, lets focus on our immediate lesson: how to build a simple messaging platform powered by **Pocketbase**. If you find joy in engaging with projects during your spare time, you’re going to love this: **Pocketbase**. This free, open-source tool allows you to establish the core infrastructure for your next app or service using just a single file. 
 
@@ -27,7 +27,7 @@ Excited? Let's dive in together and build an amazing **Chat App** using **Pocket
 ## Build a Startr Chat App  with Pocketbase in no time
 
 
-![[Projects/Curriculum/Startr.Stack/attachments/ab0a25dad04d3cd9fc8bc6975289c838_MD5.png]]
+![](./attachments/ab0a25dad04d3cd9fc8bc6975289c838_MD5.png)
 https://pocketbase.io
 
 ###  TODO switch this section: chat.startr.space
@@ -39,7 +39,7 @@ To give you a taste of what we’re going to build, he’s the final project up 
 	- [ ] setup with Docker
 	- [ ] Move to [CapRover | Server Dashboard](https://captain.production.openco.ca/#/login)
 - [ ] Add screenshots
-![[Projects/Curriculum/Startr.Stack/attachments/image_of_chat.png]]
+![](./attachments/image_of_chat.png)
 
 
 ### Setting Pocketbase Up
@@ -48,7 +48,7 @@ Let's get started with installing Pocketbase!
 
 #### If you want to learn how build the entire project: 
 
-Follow these first straightforward steps. Alternatively, if you're crunched for time, [[#Dive right into a working chat app?|jump ahead]] and [download our completed open source project](https://github.com/Startr/WEB-Pocketbase-Chat/archive/refs/heads/master.zip), we've set it up so that it will do all of these initial steps automatically (if you're setup to use [[npm]]).
+Follow these first straightforward steps. Alternatively, if you're crunched for time, [[#Dive right into a working chat app?|jump ahead) and [download our completed open source project](https://github.com/Startr/WEB-Pocketbase-Chat/archive/refs/heads/master.zip), we've set it up so that it will do all of these initial steps automatically (if you're setup to use [[npm)).
 
 - [ ] #todo small npm writeup.
 
@@ -115,7 +115,7 @@ With everything set up run `./pocketbase serve` from you command line. This will
 ### Setup the Data Base: 
 #### Creating our  **Pocketbase** Collections
 
-The next step to build our awesome [[Startr Pocketbase-Chat]] App is creating our Data Model. Data models are how we organize our information it used to be the people would organize their information on index cards and then put these into cabinets. You can think of data models as the rules for organizing these index cards into various cabinets and what we can put on these index cards.
+The next step to build our awesome [[Startr Pocketbase-Chat) App is creating our Data Model. Data models are how we organize our information it used to be the people would organize their information on index cards and then put these into cabinets. You can think of data models as the rules for organizing these index cards into various cabinets and what we can put on these index cards.
 
 Most of the time we call data models, database models. In the Pocketbase world, those are called **Collections**.
 
@@ -130,7 +130,7 @@ Open our browser and head to our [Pocketbase Admin UI:](http://127.0.0.1:8090/_/
 
 At our first login, you’ll see something like this:
 
-![[Projects/Curriculum/Startr.Stack/attachments/pocketbase_first_login.png]]
+![](./attachments/pocketbase_first_login.png)
 #### Pocketbase Collections
 
 Let’s go ahead and create a collection named “**friends”**. It will have two fields:
@@ -138,8 +138,8 @@ Let’s go ahead and create a collection named “**friends”**. It will have t
 - **userID** of type “Relation” -> Users -> Single
 - **friendID** of type “Relation” -> Users -> Single
 
-[[Projects/Curriculum/Startr.Stack/attachments/9ec52524866cd98a3b585fa8b123e19a_MD5.jpeg|Open: Screenshot 2024-04-22 at 8.00.36 AM.png]]
-![[Projects/Curriculum/Startr.Stack/attachments/9ec52524866cd98a3b585fa8b123e19a_MD5.jpeg]]
+
+![](./attachments/9ec52524866cd98a3b585fa8b123e19a_MD5.jpeg)
 
 We'll also create a collection named “**messages”**. It will have three fields:
 
@@ -147,8 +147,8 @@ We'll also create a collection named “**messages”**. It will have three fiel
 - **recipientID** of type “Relation” -> Users -> Single
 - **message** of type plain text
 
-[[Projects/Curriculum/Startr.Stack/attachments/184e2e55b46d9150a5f786071f1dfbbb_MD5.jpeg|Open: Screenshot 2024-04-22 at 8.01.24 AM.png]]
-![[Projects/Curriculum/Startr.Stack/attachments/184e2e55b46d9150a5f786071f1dfbbb_MD5.jpeg]]
+
+![](./attachments/184e2e55b46d9150a5f786071f1dfbbb_MD5.jpeg)
 
 Excellent! Pocketbase is now exposing APIs for our collections without our having to write a single line of code!
 
@@ -159,7 +159,7 @@ Excellent! Pocketbase is now exposing APIs for our collections without our havin
 
 To write our App, we’ll rely on a few dependencies:
 
-- [ ] [Pocketbase client JS SDK](https://github.com/pocketbase/js-sdk): to simplify talking with [[Pocketbase]]
+- [ ] [Pocketbase client JS SDK](https://github.com/pocketbase/js-sdk): to simplify talking with [[Pocketbase)
 - [ ] [AlpineJS](https://alpinejs.dev/): a lightweight reactive JS framework or
 - [ ] #TODO  possibly swap out Alpine for Hyperscript
 - [ ] [Startr.Style](https://startr.style): our teeny CSS framework with rocks!
@@ -198,7 +198,7 @@ Also notice the `x-model` attributes: they are used to bind the user input wit
 
 The login / signup page should look like this:
 
-![[Projects/Curriculum/Startr.Stack/attachments/pocketbase_chat_login_signup.png]]
+![](./attachments/pocketbase_chat_login_signup.png)
 Our Signup / Login page!
 
 ##### After the user logged in successfully, we want to show them their  friends list:
@@ -209,7 +209,7 @@ Here’s how it looks like:
 
 #todo replace image
 
-![[Projects/Curriculum/Startr.Stack/attachments/pocket_base_chat_friends_list.png]]
+![](./attachments/pocket_base_chat_friends_list.png)
 
 Friends list
 
@@ -218,7 +218,7 @@ Our last section shows the chat messages we've had between each individual frien
 #todo decide if messages can be deleted and or changed
 #todo replace image
 
-![[Projects/Curriculum/Startr.Stack/attachments/pocketbase_chat_friend_chat.png]]
+![](./attachments/pocketbase_chat_friend_chat.png)
 ToDo Items
 
 Chat: The Javascript
@@ -264,7 +264,7 @@ Pocketbase allows us to do that straight from the Admin Panel.
 **Head to our “friends” collection panel, then click on the cog at the top, then click on “API Rules” on the side panel.**
 
 #todo replace image for friends' rules
-![[Projects/Curriculum/Startr.Stack/attachments/pocketbase_chat_collection_rules.png]]
+![](./attachments/pocketbase_chat_collection_rules.png)
 
 API Rules for “friends” collection
 
@@ -275,7 +275,7 @@ It’s pretty straightforward: we need the userID in the request to match the us
 **Next, we use the same steps to keep messages safe: we make sure that no one can mess with stuff that isn’t theirs:**
 
 #todo replace image for messages' rules
-![[Projects/Curriculum/Startr.Stack/attachments/3acc21c825defbcdd568ece1ded9a339_MD5.png]]
+![](./attachments/3acc21c825defbcdd568ece1ded9a339_MD5.png)
 API Rules for “item” collection
 
 ### Quick Tip: Set Up Pocketbase in Just 3 Minutes on Fly.io
