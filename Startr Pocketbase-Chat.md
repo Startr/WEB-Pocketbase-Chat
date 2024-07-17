@@ -135,16 +135,17 @@ At our first login, you’ll see something like this:
 
 Let’s go ahead and create a collection named “**friends”**. It will have two fields:
 
-- **userID** of type “Relation” -> Users -> Single
-- **friendID** of type “Relation” -> Users -> Single
+- **userID** of type “Relation” -> Select Collection "Users" -> Single
+
+- **friendID** of type “Relation” -> Select Collection "Users" -> Single
 
 
 ![](./attachments/9ec52524866cd98a3b585fa8b123e19a_MD5.jpeg)
 
 We'll also create a collection named “**messages”**. It will have three fields:
 
-- **userID** of type “Relation” -> Users -> Single
-- **recipientID** of type “Relation” -> Users -> Single
+- **userID** of type “Relation” -> Select Collection "Users" -> Single
+- **recipientID** of type “Relation” -> Select Collection "Users" -> Single
 - **message** of type plain text
 
 
