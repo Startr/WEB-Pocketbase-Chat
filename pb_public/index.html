@@ -163,7 +163,7 @@
 
           async init() {
             // initialize pocketbase
-            this.client = new PocketBase("http://192.168.87.125:8090");
+            this.client = new PocketBase("http://127.0.0.1:8090");
 
             // capture invalid token
             this.client.afterSend = (response, data) => {
