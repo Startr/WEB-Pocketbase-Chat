@@ -14,7 +14,7 @@ In this guide, we’ll dive into how to effectively use these low-code platforms
 
 ### **Streamlining Your Setup with Startr Stack and Startr.Style**
 
-**Getting everything ready for a new project can sometimes feel like piecing together a complex puzzle. That’s why I rely on my Startr.sh quick setup and Startr.Style to simplify the process from the get-go.
+**Getting everything ready for a new project can sometimes feel like piecing together a complex puzzle. That’s why I rely on my Startr.sh quick setup and Startr.Style to simplify the process from the get-go.**
 
 [[Want to learn more? Schedule your next free startr lesson now.)
 
@@ -27,7 +27,7 @@ Excited? Let's dive in together and build an amazing **Chat App** using **Pocket
 ## Build a Startr Chat App  with Pocketbase in no time
 
 
-![](./attachments/ab0a25dad04d3cd9fc8bc6975289c838_MD5.png)
+![alt text](./attachments/ab0a25dad04d3cd9fc8bc6975289c838_MD5.png "title")
 https://pocketbase.io
 
 ###  TODO switch this section: chat.startr.space
@@ -38,7 +38,7 @@ To give you a taste of what we’re going to build, he’s the final project up 
 - [ ] #todo host instance of our chat
 	- [ ] setup with Docker
 	- [ ] Move to [CapRover | Server Dashboard](https://captain.production.openco.ca/#/login)
-- [ ] Add screenshots
+
 ![](./attachments/image_of_chat.png)
 
 
@@ -99,7 +99,7 @@ Just want to be able to read over how it was built? You can [download our WEB-Po
 
 > **Note:** if you have npm installed we've even made it so you don't have to worry about which version of pocketbase if perfect for your computer. 
 
-Open the zip file and it will create a folder called WEB-Pocketbase-Chat-master. You want to go to this folder in your terminal.  If you already have something running in the terminal, make sure to stop it. This can be done by control c.  Remember to change directory use the command `cd` followed by a space and the full dorectory location and name.
+Open the zip file and it will create a folder called WEB-Pocketbase-Chat-master. You want to go to this folder in your terminal.  If you already have something running in the terminal, make sure to stop it. This can be done by control c.  Remember to change directory use the command `cd` followed by a space and the full directory location and name.
 
 > **Note:** remember the Mac, you can drag'n drop that directory into the terminal after your `cd` command, and will put the full path, including the directory name. 
 
@@ -195,8 +195,6 @@ In line 19, we can see how AlpineJS only shows the `<article>` block if the re
 
 Also notice the `x-model` attributes: they are used to bind the user input with our Javascript variables.
 
-#todo replace with our images
-
 The login / signup page should look like this:
 
 ![](./attachments/pocketbase_chat_login_signup.png)
@@ -208,19 +206,24 @@ Notice how AlpineJS `x-for` (line 15) attribute allows us to display multiple 
 
 Here’s how it looks like:
 
-#todo replace image
-
 ![](./attachments/pocket_base_chat_friends_list.png)
 
 Friends list
 
+![](./attachments/friends_mobile_view.png)
+
+Friends list in mobile view
+
 Our last section shows the chat messages we've had between each individual friend, allowing the user to view and create new messages:
 
 #todo decide if messages can be deleted and or changed
-#todo replace image
 
 ![](./attachments/pocketbase_chat_friend_chat.png)
 ToDo Items
+
+![](./attachments/mobile_chat_view.png)
+
+Chat messages in mobile view
 
 Chat: The Javascript
 
@@ -264,8 +267,7 @@ Pocketbase allows us to do that straight from the Admin Panel.
 
 **Head to our “friends” collection panel, then click on the cog at the top, then click on “API Rules” on the side panel.**
 
-#todo replace image for friends' rules
-![](./attachments/pocketbase_chat_collection_rules.png)
+![](./attachments/pocketbase_friends_collection_rules.png)
 
 API Rules for “friends” collection
 
@@ -275,8 +277,7 @@ It’s pretty straightforward: we need the userID in the request to match the us
 
 **Next, we use the same steps to keep messages safe: we make sure that no one can mess with stuff that isn’t theirs:**
 
-#todo replace image for messages' rules
-![](./attachments/3acc21c825defbcdd568ece1ded9a339_MD5.png)
+![](./attachments/pocketbase_messages_API.png)
 API Rules for “item” collection
 
 ### Quick Tip: Set Up Pocketbase in Just 3 Minutes on Fly.io
