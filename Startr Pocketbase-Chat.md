@@ -210,12 +210,20 @@ Here’s how it looks like:
 
 Friends list
 
+![](./attachments/friends_mobile_view.png)
+
+Friends list in mobile view
+
 Our last section shows the chat messages we've had between each individual friend, allowing the user to view and create new messages:
 
 #todo decide if messages can be deleted and or changed
 
 ![](./attachments/pocketbase_chat_friend_chat.png)
 ToDo Items
+
+![](./attachments/mobile_chat_view.png)
+
+Chat messages in mobile view
 
 Chat: The Javascript
 
